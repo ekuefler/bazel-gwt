@@ -7,14 +7,14 @@ def _gwt_war_impl(ctx):
   all_deps = get_dep_jars(ctx)
 
   # Run the GWT compiler
-  cmd = "external/local_jdk/bin/java %s -cp %s com.google.gwt.dev.Compiler %s -war %s -deploy %s -extra %s %s\n" % (
+  cmd = "external/local_jdk/bin/java %s -cp %s com.google.gwt.dev.Compiler -war %s -deploy %s -extra %s %s %s\n" % (
     " ".join(ctx.attr.jvm_flags),
     ":".join([dep.path for dep in all_deps]),
-    " ".join(ctx.attr.modules),
     output_dir + "/" + ctx.attr.output_root,
     output_dir + "/" + "WEB-INF/deploy",
     extra_dir,
     " ".join(ctx.attr.compiler_flags),
+    " ".join(ctx.attr.modules),
   )
 
   # Copy pubs into the output war
@@ -49,6 +49,7 @@ def _gwt_war_impl(ctx):
     inputs = ctx.files.pubs + list(all_deps) + ctx.files._jdk + ctx.files._zip,
     outputs = [output_war],
     mnemonic = "GwtCompile",
+    progress_message = "GWT compiling " + output_war.short_path,
     command = "set -e;" + cmd,
   )
 
