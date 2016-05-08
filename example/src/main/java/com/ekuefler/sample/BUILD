@@ -27,10 +27,19 @@ gwt_application(
   # Optional flags to pass to the GWT compiler and to dev mode. See
   # http://www.gwtproject.org/doc/latest/DevGuideCompilingAndDebugging.html for
   # more details.
-  compiler_flags = "-strict",
-  compiler_jvm_flags = "-Xmx1G",
-  dev_flags = "-logLevel DEBUG",
-  dev_jvm_flags = "-Xmx1G",
+  compiler_flags = [
+    "-strict",
+    "-sourceLevel 1.8",
+  ],
+  compiler_jvm_flags = [
+    "-Xmx1G"
+  ],
+  dev_flags = [
+    "-logLevel DEBUG"
+  ],
+  dev_jvm_flags = [
+    "-Xmx1G",
+  ],
 
   # java_libraries that will be included on the classpath when running the GWT
   # compiler. Can contain java classes and resource files.

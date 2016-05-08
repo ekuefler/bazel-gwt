@@ -8,13 +8,13 @@ def _gwt_war_impl(ctx):
 
   # Run the GWT compiler
   cmd = "external/local_jdk/bin/java %s -cp %s com.google.gwt.dev.Compiler %s -war %s -deploy %s -extra %s %s\n" % (
-    ctx.attr.jvm_flags,
+    " ".join(ctx.attr.jvm_flags),
     ":".join([dep.path for dep in all_deps]),
     " ".join(ctx.attr.modules),
     output_dir + "/" + ctx.attr.output_root,
     output_dir + "/" + "WEB-INF/deploy",
     extra_dir,
-    ctx.attr.compiler_flags,
+    " ".join(ctx.attr.compiler_flags),
   )
 
   # Copy pubs into the output war
@@ -59,8 +59,8 @@ _gwt_war = rule(
     "pubs": attr.label_list(allow_files=True),
     "modules": attr.string_list(mandatory=True),
     "output_root": attr.string(default="."),
-    "compiler_flags": attr.string(default=""),
-    "jvm_flags": attr.string(default=""),
+    "compiler_flags": attr.string_list(),
+    "jvm_flags": attr.string_list(),
     "_implicitdeps": attr.label_list(default=[
       Label("//external:asm"),
       Label("//external:javax-validation"),
@@ -99,10 +99,10 @@ def _gwt_dev_impl(ctx):
 
   # Run dev mode
   cmd += "java %s -cp $javaRoot:%s com.google.gwt.dev.DevMode -war %s -workDir ./dev-workdir %s %s\n" % (
-    ctx.attr.jvm_flags,
+    " ".join(ctx.attr.jvm_flags),
     ":".join(dep_paths),
     "war/" + ctx.attr.output_root,
-    ctx.attr.dev_flags,
+    " ".join(ctx.attr.dev_flags),
     " ".join(ctx.attr.modules),
   )
 
@@ -125,8 +125,8 @@ _gwt_dev = rule(
     "modules": attr.string_list(mandatory=True),
     "pubs": attr.label_list(allow_files=True),
     "output_root": attr.string(default="."),
-    "dev_flags": attr.string(default=""),
-    "jvm_flags": attr.string(default=""),
+    "dev_flags": attr.string_list(),
+    "jvm_flags": attr.string_list(),
     "_implicitdeps": attr.label_list(default=[
       Label("//external:asm"),
       Label("//external:javax-validation"),
@@ -156,10 +156,10 @@ def gwt_application(
     pubs=[],
     output_root=".",
     java_root="src/main/java",
-    compiler_flags="",
-    compiler_jvm_flags="",
-    dev_flags="",
-    dev_jvm_flags=""):
+    compiler_flags=[],
+    compiler_jvm_flags=[],
+    dev_flags=[],
+    dev_jvm_flags=[]):
   # Create a java_library to hold any srcs or resources passed in directly
   native.java_library(
     name = name + "-lib",
