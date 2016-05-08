@@ -10,7 +10,7 @@ def _gwt_war_impl(ctx):
   cmd = "external/local_jdk/bin/java %s -cp %s com.google.gwt.dev.Compiler %s -war %s -deploy %s -extra %s %s\n" % (
     ctx.attr.jvm_flags,
     ":".join([dep.path for dep in all_deps]),
-    ctx.attr.module,
+    " ".join(ctx.attr.modules),
     output_dir + "/" + ctx.attr.output_root,
     output_dir + "/" + "WEB-INF/deploy",
     extra_dir,
@@ -57,7 +57,7 @@ _gwt_war = rule(
   attrs = {
     "deps": attr.label_list(allow_files=FileType([".jar"])),
     "pubs": attr.label_list(allow_files=True),
-    "module": attr.string(mandatory=True),
+    "modules": attr.string_list(mandatory=True),
     "output_root": attr.string(default="."),
     "compiler_flags": attr.string(default=""),
     "jvm_flags": attr.string(default=""),
@@ -103,7 +103,7 @@ def _gwt_dev_impl(ctx):
     ":".join(dep_paths),
     "war/" + ctx.attr.output_root,
     ctx.attr.dev_flags,
-    ctx.attr.module,
+    " ".join(ctx.attr.modules),
   )
 
   # Return the script and all dependencies needed to run it
@@ -122,7 +122,7 @@ _gwt_dev = rule(
     "package_name": attr.string(mandatory=True),
     "java_root": attr.string(mandatory=True),
     "deps": attr.label_list(mandatory=True, allow_files=FileType([".jar"])),
-    "module": attr.string(mandatory=True),
+    "modules": attr.string_list(mandatory=True),
     "pubs": attr.label_list(allow_files=True),
     "output_root": attr.string(default="."),
     "dev_flags": attr.string(default=""),
@@ -148,9 +148,9 @@ def get_dep_jars(ctx):
 
 def gwt_application(
     name,
-    module,
     srcs=[],
     resources=[],
+    modules=[],
     deps=[],
     visibility=[],
     pubs=[],
@@ -173,7 +173,7 @@ def gwt_application(
     name = name,
     output_root = output_root,
     deps = deps + [name + "-lib"],
-    module = module,
+    modules = modules,
     visibility = visibility,
     pubs = pubs,
     compiler_flags = compiler_flags,
@@ -185,7 +185,7 @@ def gwt_application(
     output_root = output_root,
     package_name = PACKAGE_NAME,
     deps = deps + [name + "-lib"],
-    module = module,
+    modules = modules,
     visibility = visibility,
     pubs = pubs,
     dev_flags = dev_flags,

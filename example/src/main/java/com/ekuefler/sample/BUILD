@@ -4,7 +4,7 @@ gwt_application(
   name = "SampleApp",
   srcs = glob(["*.java"]),
   resources = glob(["*.gwt.xml"]),
-  module = "com.ekuefler.sample.SampleApp",
+  modules = ["com.ekuefler.sample.SampleApp"],
   pubs = glob(["public/*"]),
   compiler_flags = "-strict",
   compiler_jvm_flags = "-Xmx1G",
