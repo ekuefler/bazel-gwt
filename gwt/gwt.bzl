@@ -145,6 +145,8 @@ def get_dep_jars(ctx):
 def gwt_application(
     name,
     module,
+    srcs=[],
+    resources=[],
     deps=[],
     visibility=[],
     pubs=[],
@@ -152,10 +154,19 @@ def gwt_application(
     java_root="src/main/java",
     compiler_flags="",
     dev_flags=""):
+  # Create a java_library to hold any srcs or resources passed in directly
+  native.java_library(
+    name = name + "-lib",
+    srcs = srcs,
+    deps = deps + [
+      "//external:gwt-user",
+    ],
+    resources = resources,
+  )
   _gwt_war(
     name = name,
     output_root = output_root,
-    deps = deps,
+    deps = deps + [name + "-lib"],
     module = module,
     visibility = visibility,
     pubs = pubs,
@@ -166,7 +177,7 @@ def gwt_application(
     java_root = java_root,
     output_root = output_root,
     package_name = PACKAGE_NAME,
-    deps = deps,
+    deps = deps + [name + "-lib"],
     module = module,
     visibility = visibility,
     pubs = pubs,
