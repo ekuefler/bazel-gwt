@@ -18,7 +18,7 @@ via `bazel run`.
 <a name="setup"></a>
 ## Setup
 
-To be able to use the Groovy rules, you must provide bindings for the following
+To be able to use the GWT rules, you must provide bindings for the following
 targets:
 
   * `//external:asm`
@@ -60,7 +60,7 @@ Suppose you have the following directory structure for a simple GWT application:
 ```
 
 Here, `MyApp.java` defines the entry point to a GWT application specified by
-`MyApp.gwt.xml` which depends on another java library `MyLib.java`. `index.html`
+`MyApp.gwt.xml` which depends on another Java library `MyLib.java`. `index.html`
 defines the HTML page that links in the GWT application. To build this app, your
 `src/main/java/app/BUILD` can look like this:
 
@@ -89,8 +89,9 @@ http://127.0.0.1:8888/index.html in a browser. Note that development mode assume
 that all of your `.java` files are located under `src/main/java/` - see details
 on the `java_root` flag below if this is not the case.
 
-For a complete example, see the `example/` directory in this repository.
-
+For a complete example, see the
+[`example/`](https://github.com/ekuefler/bazel-gwt/tree/master/example/src/main/java/com/ekuefler/sample)
+directory in this repository.
 
 <a name="gwt_application"></a>
 ## gwt_library
@@ -101,9 +102,9 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
 
 ### Implicit output targets
 
- * *`name`*`.war`: archive containing GWT compiler output and any files passed
+ * `<name>.war`: archive containing GWT compiler output and any files passed
    in via pubs.
- * *`name`*`-dev`: script that can be run via `bazel run` to launch the app in
+ * `<name>-dev`: script that can be run via `bazel run` to launch the app in
    development mode.
 
 <table class="table table-condensed table-bordered table-params">
@@ -140,7 +141,8 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <code>List of labels, optional</code>
         <p>
           List of resource files that will be passed on the classpath to the GWT
-          compiler, e.g. `.gwt.xml`, `.ui.xml`, and `.css` files.
+          compiler, e.g. <code>.gwt.xml</code>, <code>.ui.xml</code>, and
+          <code>.css</code> files.
         </p>
       </td>
     </tr>
@@ -151,7 +153,7 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <p>
           List of fully-qualified names of modules that will be passed to the GWT
           compiler. Usually contains a single module name corresponding to the
-          application's `.gwt.xml` file.
+          application's <code>.gwt.xml</code> file.
         </p>
       </td>
     </tr>
@@ -161,7 +163,7 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <code>List of labels, optional</code>
         <p>
           Files that will be copied directly to the output war, such as static
-          HTML or image resources. Not interpretted by the GWT compiler.
+          HTML or image resources. Not interpreted by the GWT compiler.
         </p>
       </td>
     </tr>
@@ -173,8 +175,8 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
           List of other java_libraries on which the application depends. Both the
           class jars and the source jars corresponding to each library as well as
           their transitive dependencies will be passed to the GWT compiler's
-          classpath. These libraries may contain other `.gwt.xml`, `.ui.xml`,
-          etc. files as `resources`.
+          classpath. These libraries may contain other <code>.gwt.xml</code>,
+          <code>.ui.xml</code>, etc. files as <code>resources</code>.
         </p>
       </td>
     </tr>
@@ -194,12 +196,12 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <code>String, optional</code>
         <p>
           Directory relative to the workspace root that forms the root of the
-          Java package hierarchy (e.g. it contains a `com` directory). By default
-          this is `src/main/java`. If your Java files aren't under
-          `src/main/java`, you must set this property in order for development
-          mode to work correctly. Otherwise GWT won't be able to see your source
-          files, so you will not see any changes reflected when refreshing dev
-          mode.
+          Java package hierarchy (e.g. it contains a <code>com</code> directory).
+          By default this is `src/main/java`. If your Java files aren't under
+          <code>src/main/java</code>, you must set this property in order for
+          development mode to work correctly. Otherwise GWT won't be able to see
+          your source files, so you will not see any changes reflected when
+          refreshing dev mode.
         </p>
       </td>
     </tr>
@@ -209,7 +211,7 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <code>List of strings, optional</code>
         <p>
           Additional flags that will be passed to the GWT compiler. See
-          [here](http://www.gwtproject.org/doc/latest/DevGuideCompilingAndDebugging.html#DevGuideCompilerOptions)
+          <a href='http://www.gwtproject.org/doc/latest/DevGuideCompilingAndDebugging.html#DevGuideCompilerOptions'>here</a>
           for a list of available flags.
         </p>
       </td>
@@ -220,7 +222,7 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <code>List of strings, optional</code>
         <p>
           Additional JVM flags that will be passed to the GWT compiler, such as
-          `-Xmx4G` to increase the amount of available memory.
+          <code>-Xmx4G</code> to increase the amount of available memory.
         </p>
       </td>
     </tr>
@@ -230,7 +232,7 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <code>List of strings, optional</code>
         <p>
           Additional flags that will be passed to development mode. See
-          [here](http://www.gwtproject.org/doc/latest/DevGuideCompilingAndDebugging.html#What_options_can_be_passed_to_development_mode)
+          <a href='http://www.gwtproject.org/doc/latest/DevGuideCompilingAndDebugging.html#What_options_can_be_passed_to_development_mode'>here</a>
           for a list of available flags.
         </p>
       </td>
@@ -241,7 +243,7 @@ gwt_application(name, srcs, resources, modules, pubs, deps, output_root, java_ro
         <code>List of strings, optional</code>
         <p>
           Additional JVM flags that will be passed to development mode, such as
-          `-Xmx4G` to increase the amount of available memory.
+          <code>-Xmx4G</code> to increase the amount of available memory.
         </p>
       </td>
     </tr>
