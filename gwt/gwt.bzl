@@ -161,18 +161,27 @@ def gwt_application(
     dev_flags=[],
     dev_jvm_flags=[]):
   # Create a java_library to hold any srcs or resources passed in directly
-  native.java_library(
-    name = name + "-lib",
-    srcs = srcs,
-    deps = deps + [
-      "//external:gwt-user",
-    ],
-    resources = resources,
-  )
+  all_deps = deps
+  if len(srcs) + len(resources) > 0:
+    if len(srcs) > 0:
+      native.java_library(
+        name = name + "-lib",
+        srcs = srcs,
+        deps = deps + ["//external:gwt-user"],
+        resources = resources,
+      )
+    else:
+      native.java_library(
+        name = name + "-lib",
+        resources = resources,
+      )
+    all_deps += [name + "-lib"]
+
+  # Create the war and dev mode targets
   _gwt_war(
     name = name,
     output_root = output_root,
-    deps = deps + [name + "-lib"],
+    deps = all_deps,
     modules = modules,
     visibility = visibility,
     pubs = pubs,
@@ -184,7 +193,7 @@ def gwt_application(
     java_root = java_root,
     output_root = output_root,
     package_name = PACKAGE_NAME,
-    deps = deps + [name + "-lib"],
+    deps = all_deps,
     modules = modules,
     visibility = visibility,
     pubs = pubs,
