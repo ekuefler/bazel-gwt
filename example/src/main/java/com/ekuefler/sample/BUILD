@@ -7,4 +7,7 @@ gwt_application(
   module = "com.ekuefler.sample.SampleApp",
   pubs = glob(["public/*"]),
   compiler_flags = "-strict",
+  deps = [
+    "//example/src/main/java/com/ekuefler/sample/lib",
+  ],
 )
