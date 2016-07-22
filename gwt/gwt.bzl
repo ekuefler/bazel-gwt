@@ -56,7 +56,7 @@ def _gwt_war_impl(ctx):
     outputs = [output_war],
     mnemonic = "GwtCompile",
     progress_message = "GWT compiling " + output_war.short_path,
-    command = "set -e;" + cmd,
+    command = "set -e\n" + cmd,
   )
 
 _gwt_war = rule(
@@ -68,13 +68,6 @@ _gwt_war = rule(
     "output_root": attr.string(default="."),
     "compiler_flags": attr.string_list(),
     "jvm_flags": attr.string_list(),
-    "_implicitdeps": attr.label_list(default=[
-      Label("//external:asm"),
-      Label("//external:javax-validation"),
-      Label("//external:javax-validation-src"),
-      Label("//external:gwt-dev"),
-      Label("//external:gwt-user"),
-    ]),
     "_jdk": attr.label(
       default=Label("//tools/defaults:jdk")),
     "_zip": attr.label(
@@ -134,20 +127,13 @@ _gwt_dev = rule(
     "output_root": attr.string(default="."),
     "dev_flags": attr.string_list(),
     "jvm_flags": attr.string_list(),
-    "_implicitdeps": attr.label_list(default=[
-      Label("//external:asm"),
-      Label("//external:javax-validation"),
-      Label("//external:javax-validation-src"),
-      Label("//external:gwt-dev"),
-      Label("//external:gwt-user"),
-    ]),
   },
   executable = True,
 )
 
 def _get_dep_jars(ctx):
-  all_deps = set(ctx.files._implicitdeps + ctx.files.deps)
-  for this_dep in ctx.attr._implicitdeps + ctx.attr.deps:
+  all_deps = set(ctx.files.deps)
+  for this_dep in ctx.attr.deps:
     if hasattr(this_dep, 'java'):
       all_deps += this_dep.java.transitive_runtime_deps
       all_deps += this_dep.java.transitive_source_jars
@@ -206,28 +192,39 @@ def gwt_application(
     dev_jvm_flags: Additional JVM flags that will be passed to development mode,
       such as `-Xmx4G` to increase the amount of available memory.
   """
-  # Create a java_library to hold any srcs or resources passed in directly
-  all_deps = deps
-  if len(srcs) + len(resources) > 0:
-    if len(srcs) > 0:
-      native.java_library(
-        name = name + "-lib",
-        srcs = srcs,
-        deps = deps + ["//external:gwt-user"],
-        resources = resources,
-      )
-    else:
-      native.java_library(
-        name = name + "-lib",
-        resources = resources,
-      )
-    all_deps += [name + "-lib"]
+  # Create a dummy java_binary to generate a deploy jar containing all transtive
+  # deps and srcs. We have to do this instead of passing the transitive jars on
+  # th classpath directly, since in large projects the classpath length could
+  # exceed the maximum command-line length accepted by the OS.
+  all_deps = deps + [
+    "//external:asm",
+    "//external:javax-validation",
+    "//external:javax-validation-src",
+    "//external:gwt-dev",
+    "//external:gwt-user",
+  ]
+  if len(srcs) > 0:
+    native.java_binary(
+      name = name + "-deps",
+      resources = resources,
+      srcs = srcs,
+      deps = all_deps,
+    )
+  else:
+    native.java_binary(
+      name = name + "-deps",
+      resources = resources,
+      runtime_deps = all_deps,
+    )
 
   # Create the war and dev mode targets
   _gwt_war(
     name = name,
     output_root = output_root,
-    deps = all_deps,
+    deps = [
+      name + "-deps_deploy.jar",
+      name + "-deps_deploy-src.jar",
+    ],
     modules = modules,
     visibility = visibility,
     pubs = pubs,
@@ -239,7 +236,10 @@ def gwt_application(
     java_root = java_root,
     output_root = output_root,
     package_name = PACKAGE_NAME,
-    deps = all_deps,
+    deps = [
+      name + "-deps_deploy.jar",
+      name + "-deps_deploy-src.jar",
+    ],
     modules = modules,
     visibility = visibility,
     pubs = pubs,
