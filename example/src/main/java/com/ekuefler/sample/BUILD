@@ -24,6 +24,13 @@ gwt_application(
   # page that bootstraps the GWT app. Optional.
   pubs = glob(["public/*"]),
 
+  # The root of the Java package hierarchy (which usually contains a top-level
+  # package like "com"), relative to the root of the workspace (the directory
+  # containing the WORKSPACE file). By default, this is set to "src/main/java".
+  # If your java files aren't under src/main/java (which is the case in this
+  # example), you must set this attribute for dev mode to function correctly.
+  java_root = "example/src/main/java",
+
   # Optional flags to pass to the GWT compiler and to dev mode. See
   # http://www.gwtproject.org/doc/latest/DevGuideCompilingAndDebugging.html for
   # more details.

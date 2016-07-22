@@ -96,6 +96,12 @@ def _gwt_dev_impl(ctx):
   # Determine the root directory of the package hierarchy. This needs to be on
   # the classpath for GWT to see changes to source files.
   cmd += "javaRoot=$(pwd | sed -e 's:\(.*\)%s.*:\\1:')../../../%s\n" % (ctx.attr.package_name, ctx.attr.java_root)
+  cmd += 'echo "Dev mode working directoy is $(pwd)"\n'
+  cmd += 'echo "Using Java sources rooted at $javaRoot"\n'
+  cmd += 'if [ ! -d $javaRoot ]; then\n'
+  cmd += '  echo "The Java root directory doesn\'t exist. Is java_root set correctly in your gwt_application?"\n'
+  cmd += '  exit 1\n'
+  cmd += 'fi\n'
 
   # Run dev mode
   cmd += "java %s -cp $javaRoot:%s com.google.gwt.dev.DevMode -war %s -workDir ./dev-workdir %s %s\n" % (
