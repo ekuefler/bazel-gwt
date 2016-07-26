@@ -30,10 +30,11 @@ targets:
 The easiest way to do so is to add the following to your `WORKSPACE` file:
 
 ```python
-git_repository(
-    name = "com_ekuefler_bazel_gwt",
-    remote = "https://github.com/ekuefler/bazel-gwt.git",
-    tag = "0.0.1",
+http_archive(
+  name = "com_ekuefler_bazel_gwt",
+  url = "https://github.com/ekuefler/bazel-gwt/archive/0.0.2.tar.gz",
+  sha256 = "1e0abb048e2741f7bf57633d6562bb737911b0d831c907745313cc4b8e4a837e",
+  strip_prefix = "bazel-gwt-0.0.2",
 )
 load("@com_ekuefler_bazel_gwt//gwt:gwt.bzl", "gwt_repositories")
 gwt_repositories()
